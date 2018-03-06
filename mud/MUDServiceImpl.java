@@ -27,9 +27,9 @@ public class MUDServiceImpl implements MUDServiceInterface {
 	protected String lastMessage = "";
 
 	public MUDServiceImpl() throws RemoteException {
-		Servers.put("sample", new MUD("narnia.edg", "narnia.msg", "narnia.thg"));
-		Servers.put("aberdeen", new MUD("aberdeen.edg", "aberdeen.msg", "aberdeen.thg"));
-		Servers.put("aberdeen2", new MUD("aberdeen.edg", "aberdeen.msg", "aberdeen.thg"));
+		Servers.put("sample", new MUD("maps/sample.edg", "maps/sample.msg", "maps/sample.thg"));
+		Servers.put("aberdeen", new MUD("maps/aberdeen.edg", "maps/aberdeen.msg", "maps/aberdeen.thg"));
+		Servers.put("aberdeen2", new MUD("maps/aberdeen.edg", "maps/aberdeen.msg", "maps/aberdeen.thg"));
 		MUDTotal = 3;
 
 		Timer timerObj = new Timer(true);
@@ -75,7 +75,7 @@ public class MUDServiceImpl implements MUDServiceInterface {
 
 	public boolean createMUD(String name) throws RemoteException {
 		if (MAX_NUM_OF_MUDS > MUDTotal) {
-			Servers.put(name, new MUD("aberdeen.edg", "aberdeen.msg", "aberdeen.thg"));
+			Servers.put(name, new MUD("maps/aberdeen.edg", "maps/aberdeen.msg", "maps/aberdeen.thg"));
 			MUDTotal++;
 			return true;
 		}
