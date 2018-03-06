@@ -2,16 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3bba4e79-3d3b-40dd-a067-815aecb3dcd0" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/aberdeen.edg" afterPath="$PROJECT_DIR$/maps/aberdeen.edg" />
-      <change beforePath="$PROJECT_DIR$/aberdeen.msg" afterPath="$PROJECT_DIR$/maps/aberdeen.msg" />
-      <change beforePath="$PROJECT_DIR$/aberdeen.thg" afterPath="$PROJECT_DIR$/maps/aberdeen.thg" />
-      <change beforePath="$PROJECT_DIR$/mud/MUDServiceImpl.java" afterPath="$PROJECT_DIR$/mud/MUDServiceImpl.java" />
-      <change beforePath="$PROJECT_DIR$/narnia.edg" afterPath="$PROJECT_DIR$/maps/sample.edg" />
-      <change beforePath="$PROJECT_DIR$/narnia.msg" afterPath="$PROJECT_DIR$/maps/sample.msg" />
-      <change beforePath="$PROJECT_DIR$/narnia.thg" afterPath="$PROJECT_DIR$/maps/sample.thg" />
+      <change beforePath="$PROJECT_DIR$/mud/MUDServiceImpl.class" afterPath="$PROJECT_DIR$/mud/MUDServiceImpl.class" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -39,7 +30,7 @@
         <entry file="file://$PROJECT_DIR$/mud/MUDClient.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="73">
-              <caret line="173" column="9" lean-forward="true" selection-start-line="173" selection-start-column="9" selection-end-line="173" selection-end-column="9" />
+              <caret line="173" column="9" lean-forward="false" selection-start-line="173" selection-start-column="9" selection-end-line="173" selection-end-column="9" />
               <folding>
                 <element signature="e#8442#8443#0" expanded="true" />
                 <element signature="e#8472#8473#0" expanded="true" />
@@ -66,7 +57,7 @@
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="22">
-              <caret line="1" column="15" lean-forward="true" selection-start-line="1" selection-start-column="15" selection-end-line="1" selection-end-column="15" />
+              <caret line="1" column="15" lean-forward="false" selection-start-line="1" selection-start-column="15" selection-end-line="1" selection-end-column="15" />
               <folding />
             </state>
           </provider>
@@ -360,12 +351,12 @@
       <option name="presentableId" value="Default" />
       <updated>1520287044260</updated>
       <workItem from="1520287046089" duration="29781000" />
-      <workItem from="1520350982154" duration="131000" />
+      <workItem from="1520350982154" duration="285000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="29912000" />
+    <option name="totallyTimeSpent" value="30066000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -662,7 +653,7 @@
     <entry file="file://$PROJECT_DIR$/mud/MUDClient.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="73">
-          <caret line="173" column="9" lean-forward="true" selection-start-line="173" selection-start-column="9" selection-end-line="173" selection-end-column="9" />
+          <caret line="173" column="9" lean-forward="false" selection-start-line="173" selection-start-column="9" selection-end-line="173" selection-end-column="9" />
           <folding>
             <element signature="e#8442#8443#0" expanded="true" />
             <element signature="e#8472#8473#0" expanded="true" />
@@ -685,7 +676,7 @@
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="22">
-          <caret line="1" column="15" lean-forward="true" selection-start-line="1" selection-start-column="15" selection-end-line="1" selection-end-column="15" />
+          <caret line="1" column="15" lean-forward="false" selection-start-line="1" selection-start-column="15" selection-end-line="1" selection-end-column="15" />
           <folding />
         </state>
       </provider>
