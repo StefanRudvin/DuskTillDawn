@@ -62,8 +62,6 @@ public class MUDServiceImpl implements MUDServiceInterface {
 
 			String mud = entry.getValue()[1];
 
-			System.out.format("Username: %s, Timeout: %s in MUD %s%n", username, timeOut, mud);
-
 			if (timeOut <= 0) {
 				lastMessage = "User " + username + " has timed out in MUD: " + mud;
 				System.out.println(lastMessage);
