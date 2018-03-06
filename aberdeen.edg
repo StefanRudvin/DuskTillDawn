@@ -1,0 +1,9 @@
+University_of_Aberdeen north The_Bobbin             a charming road past old buildings
+The_Bobbin             south University_of_Aberdeen a charming road past old buildings
+University_of_Aberdeen east  Sea                    a peaceful walk through the beach
+Sea                    west  University_of_Aberdeen a path through the woods
+Sea                    north Library                the windiest passage on earth
+Library                north Sea                    the windiest passage on earth
+The_Bobbin             east  Library                almost there!
+Library                west  The_Bobbin             almost there!
+
