@@ -9,7 +9,7 @@ public interface MUDServiceInterface extends Remote {
 		Class modified from practicals.package practicals.rmishout.ShoutServiceInterface
 	 */
 
-	public String introduction() throws RemoteException;
+	public String welcome() throws RemoteException;
 
 	public String getStartLocation() throws RemoteException;
 
@@ -33,7 +33,7 @@ public interface MUDServiceInterface extends Remote {
 
 	public void exitMUD(String username, String location) throws RemoteException;
 
-	public String getServersString() throws RemoteException;
+	public String getMudsString() throws RemoteException;
 
 	public boolean createMUD(String name) throws RemoteException;
 

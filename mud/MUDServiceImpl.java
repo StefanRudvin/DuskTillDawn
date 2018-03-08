@@ -1,36 +1,55 @@
 package mud;
 
-import java.rmi.*;
 import java.util.*;
 
 public class MUDServiceImpl implements MUDServiceInterface {
 
-	/*
-		Class modified from practicals.package practicals.rmishout.ShoutServiceImpl
+	//Class modified from practicals.package practicals.rmishout.ShoutServiceImpl
+
+	/**
+		Current instance of the MUD
 	 */
+	private MUD MUDInstance;
+	private String MUDInstanceName;
 
-	protected MUD MUDInstance;
+	/**
+	 * Hash map of all available MUDs
+	 */
+	private Map<String, MUD> Muds = new HashMap<>();
 
-	protected String MUDInstanceName;
+	/**
+		Current users in MUD. Username : <Timeout, Location>
+	 */
+	private Map<String, String[]> Players = new HashMap<>();
 
-	protected Map<String, MUD> Servers = new HashMap<String, MUD>();
-
-	// Current users in MUD. Username : <Timeout, Location>
-	protected Map<String, String[]> Users = new HashMap<String, String[]>();
-
-	protected Integer MUDTotal;
-
-	private static final int MAX_USERS_PER_MUD = 10;
+	/**
+	 	These constants can be changed to allow for server size manipulation.
+	 */
 	private static final int MAX_NUM_OF_MUDS = 5;
 	private static final int MAX_TOTAL_PLAYERS = 100;
+	private static final int MAX_PLAYERS_PER_MUD = 10;
 
-	protected String lastMessage = "";
 
-	public MUDServiceImpl() throws RemoteException {
-		Servers.put("sample", new MUD("maps/sample.edg", "maps/sample.msg", "maps/sample.thg"));
-		Servers.put("aberdeen", new MUD("maps/aberdeen.edg", "maps/aberdeen.msg", "maps/aberdeen.thg"));
-		Servers.put("aberdeen2", new MUD("maps/aberdeen.edg", "maps/aberdeen.msg", "maps/aberdeen.thg"));
-		MUDTotal = 3;
+	/**
+	 * Stores messages that are returned to the client. E.g. when player disconnects, times out or joins a mud.
+	 */
+	private String broadcastMessage = "";
+
+	public MUDServiceImpl() {
+		/*
+			Create sample MUDs when server starts
+		 */
+		Muds.put("sample", new MUD("maps/sample.edg", "maps/sample.msg", "maps/sample.thg"));
+		Muds.put("aberdeen", new MUD("maps/aberdeen.edg", "maps/aberdeen.msg", "maps/aberdeen.thg"));
+		Muds.put("aberdeen2", new MUD("maps/aberdeen.edg", "maps/aberdeen.msg", "maps/aberdeen.thg"));
+
+		/*
+			Start user timeout function.
+		 	This runs every 0.5 seconds, and after it runs 10 times without a user ping
+		 	the player is disconnected from the server,
+		 	removed from the Players object and the
+		 	users object in the mud instance.
+		 */
 
 		Timer timerObj = new Timer(true);
 		timerObj.scheduleAtFixedRate(new TimerTask() {
@@ -41,15 +60,12 @@ public class MUDServiceImpl implements MUDServiceInterface {
 		}, 10, 500);
 	}
 
-	public String refreshUserTimeOut(String username) {
-		String[] user = Users.get(username);
-		user[0] = Integer.toString(10);
-		return lastMessage;
-	}
-
+	/**
+	 *	This method runs every 500ms, decrementing the timeout variable of the players object to time out users.
+	 */
 	public void decrementUserTimeOut() {
 
-		Iterator<Map.Entry<String, String[]>> iter = Users.entrySet().iterator();
+		Iterator<Map.Entry<String, String[]>> iter = Players.entrySet().iterator();
 		while (iter.hasNext()) {
 			Map.Entry<String, String[]> entry = iter.next();
 
@@ -63,63 +79,114 @@ public class MUDServiceImpl implements MUDServiceInterface {
 			String mud = entry.getValue()[1];
 
 			if (timeOut <= 0) {
-				lastMessage = "User " + username + " has timed out in MUD: " + mud;
-				System.out.println(lastMessage);
+				disconnectPlayer(mud, username);
 				iter.remove();
-				MUDInstance.users.remove(username);
 			}
 		}
 	}
 
-	public boolean createMUD(String name) throws RemoteException {
-		if (MAX_NUM_OF_MUDS > MUDTotal) {
-			Servers.put(name, new MUD("maps/aberdeen.edg", "maps/aberdeen.msg", "maps/aberdeen.thg"));
-			MUDTotal++;
+
+	/**
+	 * This method allows the client to refresh the players object so that the player does not get timed out.
+	 * @param username String
+	 * @return String
+	 */
+	public String refreshUserTimeOut(String username) {
+		String[] user = Players.get(username);
+		user[0] = Integer.toString(10);
+		return broadcastMessage;
+	}
+
+	/**
+	 * Disconnect player and send message to all players
+	 * @param mud MUD to disconnect from
+	 * @param username String
+	 */
+	private void disconnectPlayer(String mud, String username) {
+		broadcastMessage = "Player " + username + " has timed out in MUD: " + mud;
+		System.out.println(broadcastMessage);
+		MUDInstance.users.remove(username);
+	}
+
+	/**
+	 *	Allows client to create a new MUD with a custom name.
+	 * @param name String
+	 * @return boolean
+	 */
+	public boolean createMUD(String name) {
+		if (MAX_NUM_OF_MUDS > Muds.size()) {
+			Muds.put(name, new MUD("maps/aberdeen.edg", "maps/aberdeen.msg", "maps/aberdeen.thg"));
 			return true;
 		}
 		return false;
 	}
 
-	public String getPlayerTotal() throws RemoteException {
-		return Integer.toString(Users.size());
+	/**
+	 * Get total number of players
+	 * @return String
+	 */
+	public String getPlayerTotal() {
+		return Integer.toString(Players.size());
 	}
 
-	public String getMUDTotal() throws RemoteException {
-		return MUDTotal.toString();
+	/**
+	 * Get total number of MUDs running
+	 * @return String
+	 */
+	public String getMUDTotal() {
+		return Integer.toString(Muds.size());
 	}
 
-	public String getMUDPlayerTotal() throws RemoteException {
+	/**
+	 * Get total number of players in current MUD
+	 * @return String
+	 */
+	public String getMUDPlayerTotal() {
 		return Integer.toString(MUDInstance.users.size());
 	}
 
-	public String introduction() throws RemoteException {
-		return "================================================================================================================================== \n" +
-				"                                                      Welcome to " + MUDInstanceName + "!                                          \n" +
-				"                                                     " + getPlayerTotal() + " Total players online                                 \n" +
-				"                                                  " + getMUDPlayerTotal() + " Players online in this MUD                           \n" +
-				"==================================================================================================================================";
-	}
-
-	public String getStartLocation() throws RemoteException {
+	/**
+	 * Get start location of player in current MUD
+	 * @return String
+	 */
+	public String getStartLocation() {
 		return MUDInstance.startLocation();
 	}
 
-	public String getLocationInfo(String location) throws RemoteException {
+	/**
+	 * Get information about the current location of the player
+	 * @param location String
+	 * @return String
+	 */
+	public String getLocationInfo(String location) {
 		return MUDInstance.getVertex(location).toString();
 	}
 
-	public String moveDirection(String currentLocation, String direction, String username) throws RemoteException {
+	/**
+	 * Move player in a specific direction
+	 * @param currentLocation String
+	 * @param direction String
+	 * @param username String
+	 * @return String
+	 */
+	public String moveDirection(String currentLocation, String direction, String username) {
 		return MUDInstance.moveThing(currentLocation, direction, username);
 	}
 
-	public boolean initializeUser(String username, String serverName) throws RemoteException {
-		if ((MUDInstance.users.size() <= MAX_USERS_PER_MUD) && (Users.size() < MAX_TOTAL_PLAYERS)) {
+	/**
+	 * Initialize the user in the service and send a message to all players
+	 * @param username String
+	 * @param serverName String
+	 * @return boolean
+	 */
+	public boolean initializeUser(String username, String serverName) {
+		if ((MUDInstance.users.size() <= MAX_PLAYERS_PER_MUD) && (Players.size() < MAX_TOTAL_PLAYERS)) {
 
 			String[] userArray = {"10", serverName};
 
-			Users.put(username, userArray);
+			Players.put(username, userArray);
 
-			lastMessage = "Player " + username + " has joined the game.";
+			broadcastMessage = "Player " + username + " has joined the game.";
 
 			MUDInstance.addThing(MUDInstance.startLocation(), username);
 			MUDInstance.users.put(username, MUDInstance.startLocation());
@@ -128,33 +195,74 @@ public class MUDServiceImpl implements MUDServiceInterface {
 		return false;
 	}
 
-	public String getObjectsAtLocation(String location) throws RemoteException {
+	/**
+	 * Get all objects at current player location
+	 * @param location String
+	 * @return String
+	 */
+	public String getObjectsAtLocation(String location) {
 		return MUDInstance.locationInfo(location);
 	}
 
-	public void takeItem(String item, String location) throws RemoteException {
+	/**
+	 * Take a selected item at a location
+	 * @param item String
+	 * @param location String
+	 */
+	public void takeItem(String item, String location) {
 		MUDInstance.deleteThing(location, item);
 	}
 
-	public void dropItem(String item, String location) throws RemoteException {
+	/**
+	 * Drop an item to a location
+	 * @param item String
+	 * @param location String
+	 */
+	public void dropItem(String item, String location) {
 		MUDInstance.addThing(location, item);
 	}
 
-	public String changeMUD(String MUDName) throws RemoteException {
+	/**
+	 * Change the current MUD to another specified one
+	 * @param MUDName String
+	 * @return String
+	 */
+	public String changeMUD(String MUDName) {
 		MUDInstanceName = MUDName;
-		MUDInstance = Servers.get(MUDName);
+		MUDInstance = Muds.get(MUDName);
 
 		return MUDName;
 	}
 
-	public void exitMUD(String username, String location) throws RemoteException {
-		lastMessage = "User " + username + " has left the game.";
-		Users.remove(username);
+	/**
+	 *	Exit the current MUD, send message
+	 * @param username String
+	 * @param location String
+	 */
+	public void exitMUD(String username, String location) {
+		broadcastMessage = "User " + username + " has left the game.";
+		Players.remove(username);
 		MUDInstance.users.remove(username);
 		takeItem(username, location);
 	}
 
-	public String getServersString() throws RemoteException {
-		return Servers.keySet().toString().replaceAll("\\[|\\]", "").replaceAll(",", " | ");
+	/**
+	 * Return a string
+	 * @return String
+	 */
+	public String getMudsString() {
+		return Muds.keySet().toString().replaceAll("[\\[]]", "").replaceAll(",", " | ");
+	}
+
+	/**
+	 *	Show welcome string specific to current MUDInstance
+	 * @return String
+	 */
+	public String welcome(){
+		return "================================================================================================================================== \n" +
+				"                                                      Welcome to " + MUDInstanceName + "!                                          \n" +
+				"                                                     " + getPlayerTotal() + " Total players online                                 \n" +
+				"                                                  " + getMUDPlayerTotal() + " Players online in this MUD                           \n" +
+				"==================================================================================================================================";
 	}
 }
