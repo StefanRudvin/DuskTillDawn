@@ -53,6 +53,8 @@ CGS A4-A1:
 ***
 * Server and client has a polling solution, which times out and exits clients that have quit
 * Users are notified when other users exit, are timed out or enter the game
+***
+* User can change maximum limits of total players, players per MUD and MUDs at any time
 
 
 ### Game Screen
