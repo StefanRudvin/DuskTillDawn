@@ -15,13 +15,13 @@ public interface MUDServiceInterface extends Remote {
 
 	public String getLocationInfo(String location) throws RemoteException;
 
-	public void decrementUserTimeOut() throws RemoteException;
+	public void decrementPlayerTimeOut() throws RemoteException;
 
-	public String refreshUserTimeOut(String username) throws RemoteException;
+	public String refreshPlayerTimeOut(String username) throws RemoteException;
 
 	public String moveDirection(String current, String direction, String username) throws RemoteException;
 
-	public boolean initializeUser(String username, String serverName) throws RemoteException;
+	public boolean initializePlayer(String username, String serverName) throws RemoteException;
 
 	public String getObjectsAtLocation(String location) throws RemoteException;
 

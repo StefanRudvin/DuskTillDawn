@@ -18,7 +18,7 @@ public class MUDServiceImpl implements MUDServiceInterface {
 	private Map<String, MUD> Muds = new HashMap<>();
 
 	/**
-		Current users in MUD. Username : <Timeout, Location>
+		Current players in MUD. playerName : <Timeout, Location>
 	 */
 	private Map<String, String[]> Players = new HashMap<>();
 
@@ -44,8 +44,8 @@ public class MUDServiceImpl implements MUDServiceInterface {
 		Muds.put("aberdeen2", new MUD("maps/aberdeen.edg", "maps/aberdeen.msg", "maps/aberdeen.thg"));
 
 		/*
-			Start user timeout function.
-		 	This runs every 0.5 seconds, and after it runs 10 times without a user ping
+			Start player timeout function.
+		 	This runs every 0.5 seconds, and after it runs 10 times without a player ping
 		 	the player is disconnected from the server,
 		 	removed from the Players object and the
 		 	users object in the mud instance.
@@ -55,21 +55,21 @@ public class MUDServiceImpl implements MUDServiceInterface {
 		timerObj.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
-				decrementUserTimeOut();
+				decrementPlayerTimeOut();
 			}
 		}, 10, 500);
 	}
 
 	/**
-	 *	This method runs every 500ms, decrementing the timeout variable of the players object to time out users.
+	 *	This method runs every 500ms, decrementing the timeout variable of the players object to time out players.
 	 */
-	public void decrementUserTimeOut() {
+	public void decrementPlayerTimeOut() {
 
 		Iterator<Map.Entry<String, String[]>> iter = Players.entrySet().iterator();
 		while (iter.hasNext()) {
 			Map.Entry<String, String[]> entry = iter.next();
 
-			String username = entry.getKey();
+			String playerName = entry.getKey();
 
 			Integer timeOut = Integer.parseInt(entry.getValue()[0]);
 			timeOut--;
@@ -79,7 +79,7 @@ public class MUDServiceImpl implements MUDServiceInterface {
 			String mud = entry.getValue()[1];
 
 			if (timeOut <= 0) {
-				disconnectPlayer(mud, username);
+				disconnectPlayer(mud, playerName);
 				iter.remove();
 			}
 		}
@@ -88,24 +88,24 @@ public class MUDServiceImpl implements MUDServiceInterface {
 
 	/**
 	 * This method allows the client to refresh the players object so that the player does not get timed out.
-	 * @param username String
+	 * @param playerName String
 	 * @return String
 	 */
-	public String refreshUserTimeOut(String username) {
-		String[] user = Players.get(username);
-		user[0] = Integer.toString(10);
+	public String refreshPlayerTimeOut(String playerName) {
+		String[] player = Players.get(playerName);
+		player[0] = Integer.toString(10);
 		return broadcastMessage;
 	}
 
 	/**
 	 * Disconnect player and send message to all players
 	 * @param mud MUD to disconnect from
-	 * @param username String
+	 * @param playerName String
 	 */
-	private void disconnectPlayer(String mud, String username) {
-		broadcastMessage = "Player " + username + " has timed out in MUD: " + mud;
+	private void disconnectPlayer(String mud, String playerName) {
+		broadcastMessage = "Player " + playerName + " has timed out in MUD: " + mud;
 		System.out.println(broadcastMessage);
-		MUDInstance.users.remove(username);
+		MUDInstance.users.remove(playerName);
 	}
 
 	/**
@@ -166,30 +166,30 @@ public class MUDServiceImpl implements MUDServiceInterface {
 	 * Move player in a specific direction
 	 * @param currentLocation String
 	 * @param direction String
-	 * @param username String
+	 * @param playerName String
 	 * @return String
 	 */
-	public String moveDirection(String currentLocation, String direction, String username) {
-		return MUDInstance.moveThing(currentLocation, direction, username);
+	public String moveDirection(String currentLocation, String direction, String playerName) {
+		return MUDInstance.moveThing(currentLocation, direction, playerName);
 	}
 
 	/**
-	 * Initialize the user in the service and send a message to all players
-	 * @param username String
+	 * Initialize the player in the service and send a message to all players
+	 * @param playerName String
 	 * @param serverName String
 	 * @return boolean
 	 */
-	public boolean initializeUser(String username, String serverName) {
+	public boolean initializePlayer(String playerName, String serverName) {
 		if ((MUDInstance.users.size() <= MAX_PLAYERS_PER_MUD) && (Players.size() < MAX_TOTAL_PLAYERS)) {
 
-			String[] userArray = {"10", serverName};
+			String[] playerInfoArray = {"10", serverName};
 
-			Players.put(username, userArray);
+			Players.put(playerName, playerInfoArray);
 
-			broadcastMessage = "Player " + username + " has joined the game.";
+			broadcastMessage = "Player " + playerName + " has joined the game.";
 
-			MUDInstance.addThing(MUDInstance.startLocation(), username);
-			MUDInstance.users.put(username, MUDInstance.startLocation());
+			MUDInstance.addThing(MUDInstance.startLocation(), playerName);
+			MUDInstance.users.put(playerName, MUDInstance.startLocation());
 			return true;
 		}
 		return false;
@@ -236,14 +236,14 @@ public class MUDServiceImpl implements MUDServiceInterface {
 
 	/**
 	 *	Exit the current MUD, send message
-	 * @param username String
+	 * @param playerName String
 	 * @param location String
 	 */
-	public void exitMUD(String username, String location) {
-		broadcastMessage = "User " + username + " has left the game.";
-		Players.remove(username);
-		MUDInstance.users.remove(username);
-		takeItem(username, location);
+	public void exitMUD(String playerName, String location) {
+		broadcastMessage = "Player " + playerName + " has left the game.";
+		Players.remove(playerName);
+		MUDInstance.users.remove(playerName);
+		takeItem(playerName, location);
 	}
 
 	/**

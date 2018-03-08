@@ -1,12 +1,15 @@
 package mud;
 
-import java.rmi.RMISecurityManager;
-import java.io.InputStreamReader;
-import java.rmi.RemoteException;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.rmi.Naming;
-import java.util.*;
+import java.rmi.RMISecurityManager;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MUDClient {
 
@@ -15,14 +18,14 @@ public class MUDClient {
 	/**
 	 * Store variables of current game session
 	 */
-	private static String username;
+	private static String playerName;
 	private static String serverName = "aberdeen";
 
 	private static String playerLocation;
 	private static MUDServiceInterface MUDService;
 
 	/**
-	 * Specify whether the game is running, i.e. accept user input
+	 * Specify whether the game is running, i.e. accept player input
 	 */
 	private static boolean running = true;
 
@@ -31,10 +34,13 @@ public class MUDClient {
 	 */
 	private static List<String> items = new ArrayList<>();
 
+	/**
+	 * Store current message which shows information about players leaving, timing out or joining a MUD
+	 */
 	private static String broadcastMessage = "";
 
 	/**
-	 * Specify whether the user is currently changing MUD. This stops the client pinging a non-existent player.
+	 * Specify whether the player is currently changing MUD. This stops the client pinging a non-existent player.
 	 */
 	private static Boolean changingMUD = false;
 
@@ -82,7 +88,7 @@ public class MUDClient {
 
 		printMainIntro();
 
-		selectUserName();
+		selectPlayerName();
 
 		showMudsAndJoin();
 
@@ -94,13 +100,13 @@ public class MUDClient {
 	}
 
 	/**
-	 * Select username throughout session.
+	 * Select playerName throughout session.
 	 */
-	private static void selectUserName() {
-		System.out.println("Enter your username:");
+	private static void selectPlayerName() {
+		System.out.println("Enter your playerName:");
 		try {
 			printCarets();
-			username = in.readLine();
+			playerName = in.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -108,7 +114,7 @@ public class MUDClient {
 	}
 
 	/**
-	 * Show available muds and allow user to join one
+	 * Show available muds and allow player to join one
 	 */
 	private static void showMudsAndJoin() throws RemoteException {
 		showMuds();
@@ -125,7 +131,7 @@ public class MUDClient {
 	}
 
 	/**
-	 * Allow user to join mud. If it is full, allow user to wait or try again indefinitely
+	 * Allow player to join mud. If it is full, allow player to wait or try again indefinitely
 	 */
 	private static void joinMUD() throws RemoteException {
 		System.out.println("Select which MUD to join:");
@@ -144,7 +150,7 @@ public class MUDClient {
 	}
 
 	/**
-	 * Allow user to select which MUD to join
+	 * Allow player to select which MUD to join
 	 */
 	private static void selectMud() {
 		try {
@@ -160,11 +166,11 @@ public class MUDClient {
 	 * Try to join a mud, and return boolean on whether join was successful
 	 */
 	private static boolean tryJoinMUD() throws RemoteException {
-		return MUDService.initializeUser(username, serverName);
+		return MUDService.initializePlayer(playerName, serverName);
 	}
 
 	/**
-	 * Begin pinging player object in server to avoid timeout. This is paused when user changes MUDs with changingMUD
+	 * Begin pinging player object in server to avoid timeout. This is paused when player changes MUDs with changingMUD
 	 */
 	private static void startServerPing() {
 		Timer timerObj = new Timer(true);
@@ -184,10 +190,10 @@ public class MUDClient {
 	}
 
 	/**
-	 * Refresh user timeout and printout broadcast message if it is different form the current one.
+	 * Refresh player timeout and printout broadcast message if it is different form the current one.
 	 */
 	private static void refreshTimeOutAndRetrieveBroadcast() throws RemoteException {
-		String message = MUDService.refreshUserTimeOut(username);
+		String message = MUDService.refreshPlayerTimeOut(playerName);
 
 		if (!message.equals(broadcastMessage) && !message.equals("")) {
 			broadcastMessage = message;
@@ -233,46 +239,19 @@ public class MUDClient {
 			printCarets();
 			String choice = in.readLine().toLowerCase();
 
-			if (choice.contains("move")) {
-
-				String direction = parseChoice(choice);
-
-				String location = MUDService.moveDirection(playerLocation, direction, username);
-
-				if (location.equals(playerLocation)) {
-					System.out.println("There is an obstacle in the way. Try another direction:");
-					continue;
-
-				} else {
-					playerLocation = location;
-					System.out.println("You have moved to location: " + location);
-					printCurrentLocationInfo();
-					continue;
-				}
-			}
-
-			if (choice.contains("take")) {
-				String item = parseChoice(choice);
-
-				MUDService.takeItem(item, playerLocation);
-
-				System.out.println("You have picked up: " + item);
-				items.add(item);
-
+			if (handleMoveAction(choice)) {
 				continue;
 			}
 
-			if (choice.contains("drop")) {
-				String item = parseChoice(choice);
-
-				MUDService.dropItem(item, playerLocation);
-
-				System.out.println("You dropped: " + item);
-				items.remove(item);
+			if (handleTakeAction(choice)) {
 				continue;
 			}
 
-			handleUserActions(choice);
+			if (handleDropAction(choice)) {
+				continue;
+			}
+
+			handlePlayerActions(choice);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -284,16 +263,79 @@ public class MUDClient {
 	}
 
 	/**
-	 * Handle all the available actions a user can make
+	 * Handle user taking an object
+	 * @param choice String
+	 * @return Boolean
 	 */
-	private static void handleUserActions(String choice) throws RemoteException {
+	private static Boolean handleTakeAction(String choice) throws RemoteException  {
+		if (choice.contains("take")) {
+			String item = parseChoice(choice);
+
+			MUDService.takeItem(item, playerLocation);
+
+			System.out.println("You have picked up: " + item);
+			items.add(item);
+
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Handle user moving in the game
+	 * @param choice String
+	 * @return Boolean
+	 */
+	private static Boolean handleMoveAction(String choice) throws RemoteException {
+		if (choice.contains("move")) {
+
+			String direction = parseChoice(choice);
+
+			String location = MUDService.moveDirection(playerLocation, direction, playerName);
+
+			if (location.equals(playerLocation)) {
+				System.out.println("There is an obstacle in the way. Try another direction:");
+				return true;
+
+			} else {
+				playerLocation = location;
+				System.out.println("You have moved to location: " + location);
+				printCurrentLocationInfo();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Handle user dropping an item
+	 * @param choice String
+	 * @return Boolean
+	 */
+	private static Boolean handleDropAction(String choice) throws RemoteException {
+		if (choice.contains("drop")) {
+			String item = parseChoice(choice);
+
+			MUDService.dropItem(item, playerLocation);
+
+			System.out.println("You dropped: " + item);
+			items.remove(item);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Handle all the available actions a player can make
+	 */
+	private static void handlePlayerActions(String choice) throws RemoteException {
 
 		switch (choice) {
 			case ("help"):
 				printHelp();
 				break;
 			case "whoami":
-				System.out.println(username);
+				System.out.println(playerName);
 				break;
 			case "look":
 				System.out.println(MUDService.getObjectsAtLocation(playerLocation));
@@ -333,7 +375,7 @@ public class MUDClient {
 	}
 
 	/**
-	 *	Handle user exciting a MUD - drops all items, sends request to server and pauses timeout ping
+	 *	Handle player exciting a MUD - drops all items, sends request to server and pauses timeout ping
 	 */
 	private static void exitMUD() throws RemoteException {
 
@@ -343,8 +385,8 @@ public class MUDClient {
 		}
 		changingMUD = true;
 
-		// Remove from users and items in MUD
-		MUDService.exitMUD(username, playerLocation);
+		// Remove from players and items in MUD
+		MUDService.exitMUD(playerName, playerLocation);
 	}
 
 	/**
@@ -357,7 +399,7 @@ public class MUDClient {
 	}
 
 	/**
-	 * Allow user to create a new MUD
+	 * Allow player to create a new MUD
 	 */
 	private static void handleCreateMud() {
 		System.out.println("Select name of new MUD:");
@@ -394,7 +436,7 @@ public class MUDClient {
 		System.out.println("Take <item>      - Take selected item into your inventory");
 		System.out.println("Drop <item>      - Drop selected item to the ground");
 		System.out.println("Items            - Show items in your inventory");
-		System.out.println("Whoami           - Show your player username");
+		System.out.println("Whoami           - Show your player playerName");
 		System.out.println("Look             - Show items, players and paths at current location");
 		System.out.println("Help             - Show this help menu");
 		System.out.println("Exit             - Exit the game");
@@ -410,7 +452,7 @@ public class MUDClient {
 	}
 
 	/**
-	 * Draw a set of carets to aid in user input
+	 * Draw a set of carets to aid in player input
 	 */
 	private static void printCarets() {
 		System.out.print(">> ");
