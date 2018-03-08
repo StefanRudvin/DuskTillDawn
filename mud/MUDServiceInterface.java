@@ -29,7 +29,7 @@ public interface MUDServiceInterface extends Remote {
 
 	public void dropItem(String item, String location) throws RemoteException;
 
-	public String changeMUD(String name) throws RemoteException;
+	public String changeMUD(String name, String playerName) throws RemoteException;
 
 	public void exitMUD(String username, String location) throws RemoteException;
 

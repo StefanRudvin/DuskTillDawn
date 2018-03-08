@@ -227,9 +227,11 @@ public class MUDServiceImpl implements MUDServiceInterface {
 	 * @param MUDName String
 	 * @return String
 	 */
-	public String changeMUD(String MUDName) {
+	public String changeMUD(String MUDName, String playerName) {
 		MUDInstanceName = MUDName;
 		MUDInstance = Muds.get(MUDName);
+
+		broadcastMessage = "Player " + playerName + " has joined MUD: " + MUDName;
 
 		return MUDName;
 	}

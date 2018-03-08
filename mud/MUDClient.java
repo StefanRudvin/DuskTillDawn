@@ -156,7 +156,7 @@ public class MUDClient {
 		try {
 			printCarets();
 			serverName = in.readLine();
-			MUDService.changeMUD(serverName);
+			MUDService.changeMUD(serverName, playerName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -239,18 +239,6 @@ public class MUDClient {
 			printCarets();
 			String choice = in.readLine().toLowerCase();
 
-			if (handleMoveAction(choice)) {
-				continue;
-			}
-
-			if (handleTakeAction(choice)) {
-				continue;
-			}
-
-			if (handleDropAction(choice)) {
-				continue;
-			}
-
 			handlePlayerActions(choice);
 
 		} catch (IOException e) {
@@ -329,6 +317,10 @@ public class MUDClient {
 	 * Handle all the available actions a player can make
 	 */
 	private static void handlePlayerActions(String choice) throws RemoteException {
+
+		if (handleMoveAction(choice) || handleTakeAction(choice) || handleDropAction(choice)) {
+			return;
+		}
 
 		switch (choice) {
 			case ("help"):
