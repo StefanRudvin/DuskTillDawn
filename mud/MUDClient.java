@@ -316,7 +316,7 @@ public class MUDClient {
 	/**
 	 * Handle all the available actions a player can make
 	 */
-	private static void handlePlayerActions(String choice) throws RemoteException {
+	private static void handlePlayerActions(String choice) throws IOException {
 
 		if (handleMoveAction(choice) || handleTakeAction(choice) || handleDropAction(choice)) {
 			return;
@@ -340,7 +340,16 @@ public class MUDClient {
 				exitMUD();
 				running = false;
 				break;
-			case "mudshow":
+			case "setmaxtotalplayers":
+				handleSetMaxTotalPlayers();
+				break;
+			case "setmaxmudplayers":
+				handleSetMaxMudPlayers();
+				break;
+			case "setmaxmuds":
+				handleSetMaxMuds();
+				break;
+			case "mudlist":
 				showMuds();
 				break;
 			case "mudmigrate":
@@ -364,6 +373,36 @@ public class MUDClient {
 				printHelp();
 				break;
 		}
+	}
+
+	private static void handleSetMaxTotalPlayers() throws IOException {
+		System.out.println("Enter maximum total player allowance: ");
+
+		printCarets();
+
+		String choice = in.readLine().toLowerCase();
+
+		System.out.println("Maximum player allowance set to: " + MUDService.setMaxTotalPlayers(Integer.parseInt(choice)));
+	}
+
+	private static void handleSetMaxMudPlayers() throws IOException {
+		System.out.println("Enter maximum total player allowance per MUD: ");
+
+		printCarets();
+
+		String choice = in.readLine().toLowerCase();
+
+		System.out.println("Maximum player allowance per MUD set to: " + MUDService.setMaxPlayersPerMud(Integer.parseInt(choice)));
+	}
+
+	private static void handleSetMaxMuds() throws IOException {
+		System.out.println("Enter maximum MUD allowance: ");
+
+		printCarets();
+
+		String choice = in.readLine().toLowerCase();
+
+		System.out.println("Maximum MUD allowance set to: " + MUDService.setMaxNumOfMuds(Integer.parseInt(choice)));
 	}
 
 	/**
@@ -409,7 +448,6 @@ public class MUDClient {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -435,12 +473,19 @@ public class MUDClient {
 
 		System.out.println("");
 
-		System.out.println("MUDshow          - Show list of current MUDs");
+		System.out.println("MUDlist          - Show list of current MUDs");
 		System.out.println("MUDmigrate       - Move to another MUD");
 		System.out.println("MUDcreate        - Create a whole new MUD");
+
 		System.out.println("MUDtotal         - Show total number of MUDs");
 		System.out.println("MUDplayers       - Show number of players in current MUD");
 		System.out.println("MUDtotalplayers  - Show total player number throughout all MUDs");
+
+		System.out.println("");
+
+		System.out.println("setmaxmuds         - Set maximum number of MUDs");
+		System.out.println("setmaxmudplayers   - Set maximum total players per MUD");
+		System.out.println("setmaxtotalplayers - Set maximum total players in the game");
 	}
 
 	/**

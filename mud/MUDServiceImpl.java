@@ -23,11 +23,11 @@ public class MUDServiceImpl implements MUDServiceInterface {
 	private Map<String, String[]> Players = new HashMap<>();
 
 	/**
-	 	These constants can be changed to allow for server size manipulation.
+	 	These values can be changed to allow for server size manipulation.
 	 */
-	private static final int MAX_NUM_OF_MUDS = 5;
-	private static final int MAX_TOTAL_PLAYERS = 100;
-	private static final int MAX_PLAYERS_PER_MUD = 10;
+	public static int MAX_NUM_OF_MUDS = 5;
+	public static int MAX_TOTAL_PLAYERS = 100;
+	public static int MAX_PLAYERS_PER_MUD = 10;
 
 
 	/**
@@ -58,6 +58,21 @@ public class MUDServiceImpl implements MUDServiceInterface {
 				decrementPlayerTimeOut();
 			}
 		}, 10, 500);
+	}
+
+	public Integer setMaxPlayersPerMud(int maxPlayersPerMud) {
+		MAX_PLAYERS_PER_MUD = maxPlayersPerMud;
+		return MAX_PLAYERS_PER_MUD;
+	}
+
+	public Integer setMaxTotalPlayers(int maxTotalPlayers) {
+		MAX_TOTAL_PLAYERS = maxTotalPlayers;
+		return MAX_TOTAL_PLAYERS;
+	}
+
+	public Integer setMaxNumOfMuds(int maxNumOfMuds) {
+		MAX_NUM_OF_MUDS = maxNumOfMuds;
+		return MAX_NUM_OF_MUDS;
 	}
 
 	/**
@@ -180,7 +195,7 @@ public class MUDServiceImpl implements MUDServiceInterface {
 	 * @return boolean
 	 */
 	public boolean initializePlayer(String playerName, String serverName) {
-		if ((MUDInstance.users.size() <= MAX_PLAYERS_PER_MUD) && (Players.size() < MAX_TOTAL_PLAYERS)) {
+		if ((MUDInstance.users.size() < MAX_PLAYERS_PER_MUD) && (Players.size() < MAX_TOTAL_PLAYERS)) {
 
 			String[] playerInfoArray = {"10", serverName};
 

@@ -9,38 +9,48 @@ public interface MUDServiceInterface extends Remote {
 		Class modified from practicals.package practicals.rmishout.ShoutServiceInterface
 	 */
 
-	public String welcome() throws RemoteException;
+	String welcome() throws RemoteException;
 
-	public String getStartLocation() throws RemoteException;
+	boolean initializePlayer(String username, String serverName) throws RemoteException;
 
-	public String getLocationInfo(String location) throws RemoteException;
+	String getStartLocation() throws RemoteException;
 
-	public void decrementPlayerTimeOut() throws RemoteException;
+	String getLocationInfo(String location) throws RemoteException;
 
-	public String refreshPlayerTimeOut(String username) throws RemoteException;
 
-	public String moveDirection(String current, String direction, String username) throws RemoteException;
+	void decrementPlayerTimeOut() throws RemoteException;
 
-	public boolean initializePlayer(String username, String serverName) throws RemoteException;
+	String refreshPlayerTimeOut(String username) throws RemoteException;
 
-	public String getObjectsAtLocation(String location) throws RemoteException;
 
-	public void takeItem(String item, String location) throws RemoteException;
+	String moveDirection(String current, String direction, String username) throws RemoteException;
 
-	public void dropItem(String item, String location) throws RemoteException;
+	String getObjectsAtLocation(String location) throws RemoteException;
 
-	public String changeMUD(String name, String playerName) throws RemoteException;
+	void takeItem(String item, String location) throws RemoteException;
 
-	public void exitMUD(String username, String location) throws RemoteException;
+	void dropItem(String item, String location) throws RemoteException;
 
-	public String getMudsString() throws RemoteException;
 
-	public boolean createMUD(String name) throws RemoteException;
+	boolean createMUD(String name) throws RemoteException;
 
-	public String getMUDTotal() throws RemoteException;
+	String changeMUD(String name, String playerName) throws RemoteException;
 
-	public String getPlayerTotal() throws RemoteException;
+	void exitMUD(String username, String location) throws RemoteException;
 
-	public String getMUDPlayerTotal() throws RemoteException;
+	String getMudsString() throws RemoteException;
+
+
+	String getMUDTotal() throws RemoteException;
+
+	String getPlayerTotal() throws RemoteException;
+
+	String getMUDPlayerTotal() throws RemoteException;
+
+	Integer setMaxPlayersPerMud(int maxPlayersPerMud) throws RemoteException;
+
+	Integer setMaxTotalPlayers(int maxTotalPlayers) throws RemoteException;
+
+	Integer setMaxNumOfMuds(int maxNumOfMuds) throws RemoteException;
 
 }
