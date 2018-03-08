@@ -2,9 +2,12 @@ package mud;
 
 import java.util.*;
 
+/**
+ * @author stefanrudvin 51549217
+ *
+ * Class modified from practicals.package practicals.rmishout.ShoutServiceImpl
+ */
 public class MUDServiceImpl implements MUDServiceInterface {
-
-	//Class modified from practicals.package practicals.rmishout.ShoutServiceImpl
 
 	/**
 		Current instance of the MUD

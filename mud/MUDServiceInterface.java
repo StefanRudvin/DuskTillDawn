@@ -3,11 +3,13 @@ package mud;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface MUDServiceInterface extends Remote {
 
-	/*
-		Class modified from practicals.package practicals.rmishout.ShoutServiceInterface
-	 */
+/**
+ * @author stefanrudvin 51549217
+ *
+ * Class modified from practicals.package practicals.rmishout.ShoutServiceInterface
+ */
+public interface MUDServiceInterface extends Remote {
 
 	String welcome() throws RemoteException;
 

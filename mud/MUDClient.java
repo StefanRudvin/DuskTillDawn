@@ -11,6 +11,11 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * @author stefanrudvin 51549217
+ *
+ * Class modified from practicals.package practicals.rmishout.ShoutServiceClient
+ */
 public class MUDClient {
 
 	private static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));

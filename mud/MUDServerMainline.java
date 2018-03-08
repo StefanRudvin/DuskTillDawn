@@ -5,10 +5,12 @@ import java.rmi.Naming;
 import java.rmi.RMISecurityManager;
 import java.rmi.server.UnicastRemoteObject;
 
+/**
+ * @author stefanrudvin 51549217
+ *
+ * Class modified from practicals.rmishout.ShoutServerMainline.java
+ */
 public class MUDServerMainline {
-	/*
-		Class modified from practicals.rmishout.ShoutServerMainline.java
-	 */
 
 	public static void main(String args[])
 	{
